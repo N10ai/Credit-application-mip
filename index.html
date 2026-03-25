@@ -330,51 +330,99 @@
   background: white !important;
 }
 
+/* Remove UI look */
 .pdf-mode .doc {
   box-shadow: none !important;
   border: none !important;
   border-radius: 0 !important;
 }
 
+/* Better page margins */
 .pdf-mode .page {
-  padding: 20mm 15mm !important;
+  padding: 18mm 16mm !important;
 }
 
+/* 🔥 INPUT → CLEAN TEXT BLOCK */
 .pdf-mode input,
 .pdf-mode textarea,
 .pdf-mode select {
   border: none !important;
   background: transparent !important;
-  padding: 0 !important;
+  padding: 2px 0 !important;
   font-size: 12px !important;
+  line-height: 1.4 !important;
+  min-height: auto !important;
 }
 
-.pdf-mode .topbar,
-.pdf-mode .screen-only {
-  display: none !important;
+/* 🔥 KEY FIX: prevent cutting */
+.pdf-mode span,
+.pdf-mode input,
+.pdf-mode textarea {
+  display: block !important;
+  width: 100% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: visible !important;
 }
 
-.pdf-mode .signature-wrap {
-  border: 1px solid #999 !important;
-  background: #fff !important;
+/* Add bottom line like real forms */
+.pdf-mode input::after,
+.pdf-mode textarea::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid #000;
+  margin-top: 2px;
 }
 
+/* Labels cleaner */
+.pdf-mode .field-label {
+  font-size: 10px !important;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #000 !important;
+}
+
+/* Tables = professional */
 .pdf-mode table {
   border-collapse: collapse !important;
 }
 
-.pdf-mode td, 
+.pdf-mode td,
 .pdf-mode th {
   border: 1px solid #000 !important;
+  padding: 6px !important;
 }
 
+/* Section headers */
 .pdf-mode .section-label {
   background: #000 !important;
   color: #fff !important;
+  font-size: 12px;
+  letter-spacing: 0.5px;
 }
 
+/* Remove UI junk */
+.pdf-mode .topbar,
+.pdf-mode .screen-only,
 .pdf-mode .preview-note {
   display: none !important;
+}
+
+/* Signature block */
+.pdf-mode .signature-wrap {
+  border: 1px solid #000 !important;
+  padding: 8px !important;
+  background: #fff !important;
+}
+
+/* Signature image */
+.pdf-mode img {
+  max-height: 70px;
+}
+
+/* Improve spacing */
+.pdf-mode .sign-grid {
+  gap: 18px !important;
 }
   </style>
 </head>
@@ -1014,10 +1062,34 @@
 
   updateAuditFields();
 
-  const element = document.querySelector('.doc');
+  const original = document.querySelector('.doc');
+  const clone = original.cloneNode(true);
 
-  // 🔥 Activate PDF styling
+  // 🔥 Convert inputs to real text
+  convertInputsToText(clone);
+
+  // 🔥 Handle signature
+  const sigCanvas = clone.querySelector('#signaturePad');
+  if (sigCanvas && savedSignatureData) {
+    const img = document.createElement('img');
+    img.src = savedSignatureData;
+    img.style.height = '70px';
+    sigCanvas.replaceWith(img);
+  }
+
+  // 🔥 PDF styling
   document.body.classList.add('pdf-mode');
+
+  // Temporary container
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '1000px';
+  container.style.background = '#fff';
+  container.appendChild(clone);
+
+  document.body.appendChild(container);
 
   window.scrollTo(0, 0);
 
@@ -1027,21 +1099,17 @@
         margin: 0,
         filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          scrollY: 0
-        },
+        html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
       })
-      .from(element)
+      .from(container)
       .save()
       .then(() => {
-        // 🔥 Restore UI
+        document.body.removeChild(container);
         document.body.classList.remove('pdf-mode');
       });
 
-  }, 400);
+  }, 500);
 }
 // 👈 important delay
     document.addEventListener('DOMContentLoaded', function() {
@@ -1070,6 +1138,33 @@
       window.addEventListener('load', resizeCanvas);
       resizeCanvas();
     });
+    
+    function convertInputsToText(element) {
+  const inputs = element.querySelectorAll('input, textarea, select');
+
+  inputs.forEach(el => {
+    if (el.type === 'radio') return;
+
+    let value = '';
+
+    if (el.type === 'checkbox') {
+      value = el.checked ? '☑' : '☐';
+    } else {
+      value = el.value || '';
+    }
+
+    const div = document.createElement('div');
+    div.style.minHeight = '14px';
+    div.style.padding = '2px 0';
+    div.style.borderBottom = '1px solid #000';
+    div.style.whiteSpace = 'normal';
+    div.style.wordBreak = 'break-word';
+    div.textContent = value;
+
+    el.replaceWith(div);
+  });
+}
+    
   </script>
 </body>
 </html>
