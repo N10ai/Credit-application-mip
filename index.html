@@ -325,6 +325,57 @@
       }
       .preview-note{display:none;}
     }
+    
+    .pdf-mode {
+  background: white !important;
+}
+
+.pdf-mode .doc {
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.pdf-mode .page {
+  padding: 20mm 15mm !important;
+}
+
+.pdf-mode input,
+.pdf-mode textarea,
+.pdf-mode select {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+}
+
+.pdf-mode .topbar,
+.pdf-mode .screen-only {
+  display: none !important;
+}
+
+.pdf-mode .signature-wrap {
+  border: 1px solid #999 !important;
+  background: #fff !important;
+}
+
+.pdf-mode table {
+  border-collapse: collapse !important;
+}
+
+.pdf-mode td, 
+.pdf-mode th {
+  border: 1px solid #000 !important;
+}
+
+.pdf-mode .section-label {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.pdf-mode .preview-note {
+  display: none !important;
+}
   </style>
 </head>
 <body>
@@ -965,11 +1016,9 @@
 
   const element = document.querySelector('.doc');
 
-  // 🔥 TEMP: disable inputs so they render as text
-  const inputs = element.querySelectorAll('input, textarea, select');
-  inputs.forEach(el => el.setAttribute('data-temp-disabled', 'true'));
+  // 🔥 Activate PDF styling
+  document.body.classList.add('pdf-mode');
 
-  // 🔥 SCROLL FIX (iOS)
   window.scrollTo(0, 0);
 
   setTimeout(() => {
@@ -988,8 +1037,10 @@
       .from(element)
       .save()
       .then(() => {
-        // restore if needed
+        // 🔥 Restore UI
+        document.body.classList.remove('pdf-mode');
       });
+
   }, 400);
 }
 // 👈 important delay
