@@ -1,68 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MIP Credit Application</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-  <style>
-    body { font-family: Arial; background:#eef2f6; margin:0; }
-    .container { max-width:900px; margin:20px auto; }
-    .doc { background:#fff; padding:20px; border-radius:12px; }
-    .field-label { font-weight:bold; font-size:12px; }
-    input { width:100%; padding:6px; margin-bottom:10px; }
-    button { padding:10px 14px; cursor:pointer; }
-    .signature-pad {
-      width:100%;
-      height:180px;
-      border:1px dashed #888;
-      border-radius:8px;
-    }
-    #typeSignatureLayer {
-      display:none;
-      align-items:center;
-      justify-content:center;
-      border:1px dashed #888;
-      height:180px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MIP Credit Application</title>
+
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background:#eef2f6;
+}
+
+.container {
+  max-width:900px;
+  margin:20px auto;
+}
+
+.doc {
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+}
+
+.field-label {
+  font-size:12px;
+  font-weight:bold;
+}
+
+input {
+  width:100%;
+  padding:6px;
+  margin-bottom:10px;
+}
+
+button {
+  padding:10px;
+  cursor:pointer;
+}
+
+.signature-pad {
+  width:100%;
+  height:180px;
+  border:1px dashed #888;
+  border-radius:8px;
+}
+
+#typeSignatureLayer {
+  display:none;
+  height:180px;
+  align-items:center;
+  justify-content:center;
+  border:1px dashed #888;
+}
+
+#typedPreview {
+  font-size:28px;
+  font-family:cursive;
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
+
 <form id="creditAppForm" class="doc">
 
 <h2>CREDIT APPLICATION</h2>
 
-<label class="field-label">Company Name</label>
-<input id="legalCompanyName" type="text" required>
+<label class="field-label">Company</label>
+<input id="legalCompanyName" required>
 
 <label class="field-label">Phone</label>
-<input id="phoneNumber" type="text">
+<input id="phoneNumber">
 
 <label class="field-label">EIN</label>
-<input id="ein" type="text">
+<input id="ein">
 
 <hr>
 
 <h3>Signature</h3>
 
-<label>
-<input type="radio" name="sigmode" value="draw" checked> Draw
-</label>
-
-<label>
-<input type="radio" name="sigmode" value="type"> Type
-</label>
+<label><input type="radio" name="sigmode" value="draw" checked> Draw</label>
+<label><input type="radio" name="sigmode" value="type"> Type</label>
 
 <div style="position:relative;height:180px">
 
 <canvas id="signaturePad" class="signature-pad"></canvas>
 
 <div id="typeSignatureLayer">
-  <input id="typedSignature" type="text" placeholder="Type signature">
+  <div>
+    <input id="typedSignature" placeholder="Type your signature">
+    <div id="typedPreview"></div>
+  </div>
 </div>
 
 </div>
@@ -84,76 +119,105 @@ const ctx = canvas.getContext('2d');
 let drawing = false;
 let savedSignatureData = null;
 
+// Resize canvas correctly
 function resizeCanvas() {
   const ratio = window.devicePixelRatio || 1;
-  canvas.width = canvas.offsetWidth * ratio;
-  canvas.height = canvas.offsetHeight * ratio;
-  ctx.scale(ratio, ratio);
+  const width = canvas.offsetWidth;
+  const height = canvas.offsetHeight;
+
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#111';
 }
 
-function getPoint(e) {
+// Get mouse/touch position
+function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
   const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-  return {x,y};
+  return { x, y };
 }
 
-canvas.addEventListener('mousedown', e => {
+// Drawing
+function startDraw(e) {
   drawing = true;
-  const p = getPoint(e);
-  ctx.moveTo(p.x,p.y);
-});
+  const p = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  e.preventDefault();
+}
 
-canvas.addEventListener('mousemove', e => {
+function draw(e) {
   if (!drawing) return;
-  const p = getPoint(e);
-  ctx.lineTo(p.x,p.y);
+  const p = getPos(e);
+  ctx.lineTo(p.x, p.y);
   ctx.stroke();
   savedSignatureData = canvas.toDataURL();
-});
+  e.preventDefault();
+}
 
-canvas.addEventListener('mouseup', () => drawing = false);
-canvas.addEventListener('mouseleave', () => drawing = false);
+function stopDraw() {
+  drawing = false;
+}
 
-canvas.addEventListener('touchstart', e => {
-  drawing = true;
-  const p = getPoint(e);
-  ctx.moveTo(p.x,p.y);
-});
+// Events
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDraw);
+canvas.addEventListener('mouseleave', stopDraw);
 
-canvas.addEventListener('touchmove', e => {
-  if (!drawing) return;
-  const p = getPoint(e);
-  ctx.lineTo(p.x,p.y);
-  ctx.stroke();
-  savedSignatureData = canvas.toDataURL();
-});
+canvas.addEventListener('touchstart', startDraw, { passive:false });
+canvas.addEventListener('touchmove', draw, { passive:false });
+canvas.addEventListener('touchend', stopDraw);
 
-canvas.addEventListener('touchend', () => drawing = false);
-
+// Clear signature
 function clearSignature() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   savedSignatureData = null;
 }
 
+// Initialize canvas
 window.addEventListener('load', resizeCanvas);
 
+// Toggle draw/type
 document.querySelectorAll('input[name="sigmode"]').forEach(radio => {
   radio.addEventListener('change', () => {
     const mode = document.querySelector('input[name="sigmode"]:checked').value;
 
-    document.getElementById('signaturePad').style.display = mode === 'draw' ? 'block' : 'none';
-    document.getElementById('typeSignatureLayer').style.display = mode === 'type' ? 'flex' : 'none';
+    const canvasEl = document.getElementById('signaturePad');
+    const typeLayer = document.getElementById('typeSignatureLayer');
+
+    if (mode === 'draw') {
+      canvasEl.style.display = 'block';
+      typeLayer.style.display = 'none';
+    } else {
+      canvasEl.style.display = 'none';
+      typeLayer.style.display = 'flex';
+    }
   });
 });
 
+// Typed signature preview
+const typedInput = document.getElementById('typedSignature');
+const typedPreview = document.getElementById('typedPreview');
+
+typedInput.addEventListener('input', () => {
+  typedPreview.innerText = typedInput.value;
+});
+
+// PDF generation
 function preparePdf() {
   const form = document.getElementById('creditAppForm');
+
   if (!form.reportValidity()) return;
 
   const clone = form.cloneNode(true);
 
+  // Convert inputs to text
   const inputs = clone.querySelectorAll('input');
 
   inputs.forEach(el => {
@@ -162,13 +226,18 @@ function preparePdf() {
     el.replaceWith(span);
   });
 
-  const sig = clone.querySelector('#signaturePad');
+  // Signature
+  const sigCanvas = clone.querySelector('#signaturePad');
 
-  if (sig && savedSignatureData) {
-    const img = document.createElement('img');
-    img.src = savedSignatureData;
-    img.style.height = '80px';
-    sig.replaceWith(img);
+  if (sigCanvas) {
+    if (savedSignatureData) {
+      const img = document.createElement('img');
+      img.src = savedSignatureData;
+      img.style.height = '80px';
+      sigCanvas.replaceWith(img);
+    } else {
+      sigCanvas.replaceWith(document.createElement('div'));
+    }
   }
 
   const container = document.getElementById('pdf-content');
