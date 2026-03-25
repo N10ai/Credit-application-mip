@@ -1188,6 +1188,45 @@ function preparePdf() {
     el.replaceWith(div);
   });
 }
+
+async function sendToWebhook() {
+  const form = document.getElementById('creditAppForm');
+  const formData = new FormData(form);
+
+  const data = {};
+
+  formData.forEach((value, key) => {
+    if (data[key]) {
+      if (!Array.isArray(data[key])) data[key] = [data[key]];
+      data[key].push(value);
+    } else {
+      data[key] = value;
+    }
+  });
+
+  // Add metadata
+  data.timestamp = new Date().toISOString();
+  data.userAgent = navigator.userAgent;
+  data.documentId = document.getElementById('documentId')?.textContent || '';
+
+  // Signature
+  data.signature = savedSignatureData || typedInput.value || null;
+
+  try {
+    await fetch("https://n8n-n10ai.onrender.com/webhook/31a8f4df-1c5d-4147-91a5-3bed9efe57e4", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    console.log("✅ Webhook sent");
+  } catch (error) {
+    console.error("❌ Webhook failed", error);
+  }
+}
+
     
   </script>
 </body>
