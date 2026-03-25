@@ -958,116 +958,39 @@
     }
 
     function preparePdf() {
-      const form = document.getElementById('creditAppForm');
-      if (!form.reportValidity()) return;
+  const form = document.getElementById('creditAppForm');
+  if (!form.reportValidity()) return;
 
-      updateAuditFields();
+  updateAuditFields();
 
-      const liveMode = document.querySelector('input[name="sigmode"]:checked')?.value || 'draw';
-      const typedSignatureValue = typedInput.value || '';
+  const element = document.querySelector('.doc');
 
-      const doc = document.querySelector('.doc');
-      const clone = doc.cloneNode(true);
+  // 🔥 TEMP: disable inputs so they render as text
+  const inputs = element.querySelectorAll('input, textarea, select');
+  inputs.forEach(el => el.setAttribute('data-temp-disabled', 'true'));
 
-      const cloneCanvas = clone.querySelector('#signaturePad');
-      const cloneTypeLayer = clone.querySelector('#typeSignatureLayer');
-      const cloneTypedPreview = clone.querySelector('#typedPreview');
-      const cloneTypedInput = clone.querySelector('#typedSignature');
-      const cloneHint = clone.querySelector('#signatureHint');
+  // 🔥 SCROLL FIX (iOS)
+  window.scrollTo(0, 0);
 
-      if (cloneHint) {
-        cloneHint.textContent = liveMode === 'draw'
-          ? 'Electronic signature captured.'
-          : 'Typed electronic signature captured.';
-      }
-
-      if (cloneTypedPreview) cloneTypedPreview.textContent = typedSignatureValue;
-      if (cloneTypedInput) cloneTypedInput.remove();
-
-      clone.querySelectorAll('textarea, select').forEach(replaceFieldWithSpan);
-
-      clone.querySelectorAll('input').forEach(el => {
-        if (el.id === 'typedSignature') return;
-        if (el.name === 'sigmode') {
-          el.closest('label')?.remove();
-          return;
-        }
-
-        if (el.type === 'checkbox') {
-          const span = document.createElement('span');
-          span.style.display = 'inline-block';
-          span.style.minWidth = '16px';
-          span.textContent = el.checked ? '☑' : '☐';
-          el.replaceWith(span);
-        } else if (el.type === 'radio') {
-          const span = document.createElement('span');
-          span.style.display = 'inline-block';
-          span.textContent = el.checked ? '◉' : '○';
-          el.replaceWith(span);
-        } else {
-          replaceFieldWithSpan(el);
-        }
+  setTimeout(() => {
+    html2pdf()
+      .set({
+        margin: 0,
+        filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          scrollY: 0
+        },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      })
+      .from(element)
+      .save()
+      .then(() => {
+        // restore if needed
       });
-
-      if (cloneCanvas) {
-        if (liveMode === 'draw' && savedSignatureData) {
-          const img = document.createElement('img');
-          img.src = savedSignatureData;
-          img.style.height = '80px';
-          img.style.maxWidth = '100%';
-          cloneCanvas.replaceWith(img);
-          if (cloneTypeLayer) cloneTypeLayer.remove();
-        } else if (liveMode === 'type' && typedSignatureValue.trim()) {
-          const sigDiv = document.createElement('div');
-          sigDiv.textContent = typedSignatureValue;
-          sigDiv.style.fontFamily = "'Brush Script MT','Lucida Handwriting',cursive";
-          sigDiv.style.fontSize = '36px';
-          sigDiv.style.padding = '28px 0 0';
-          cloneCanvas.replaceWith(sigDiv);
-          if (cloneTypeLayer) cloneTypeLayer.remove();
-        } else {
-          const emptyDiv = document.createElement('div');
-          emptyDiv.style.height = '80px';
-          cloneCanvas.replaceWith(emptyDiv);
-          if (cloneTypeLayer) cloneTypeLayer.remove();
-        }
-      }
-
-      clone.querySelectorAll('.screen-only').forEach(el => el.remove());
-
-const container = document.getElementById('pdf-content');
-container.innerHTML = '';
-container.appendChild(clone);
-
-// Show container
-container.style.display = 'block';
-
-// 🔥 FORCE RENDER
-container.offsetHeight;
-
-// iOS Safari fix
-window.scrollTo(0, 0);
-
-setTimeout(() => {
-  html2pdf()
-    .set({
-      margin: 0,
-      filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        logging: false
-      },
-      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-    })
-    .from(container)
-    .save()
-    .then(() => {
-      container.style.display = 'none';
-      container.innerHTML = '';
-    });
-}, 800); 
+  }, 400);
 }
 // 👈 important delay
     document.addEventListener('DOMContentLoaded', function() {
