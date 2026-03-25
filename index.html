@@ -1,294 +1,1099 @@
-<!DOCTYPE html>
+Can you give me the full code including the suggested fixes  : <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIP Cargo Express - Credit Application and Agreement</title>
+  <style>
+    :root{
+      --blue:#0f7cc2;
+      --dark:#111827;
+      --line:#cfd6df;
+      --soft:#f5f7fa;
+      --black:#111;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--dark);
+      background:#eef2f6;
+    }
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:#fff;
+      border-bottom:1px solid #d7dde5;
+      padding:12px 18px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .topbar .left{
+      font-weight:700;
+      color:var(--blue);
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:0;
+      border-radius:10px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn-primary{background:var(--blue); color:#fff;}
+    .btn-secondary{background:#e8eef5; color:#12263a;}
+    .btn-danger{background:#ffe5e5; color:#9a1c1c;}
+    .container{
+      max-width:1000px;
+      margin:24px auto 60px;
+      padding:0 16px;
+    }
+    .doc{
+      background:#fff;
+      box-shadow:0 10px 30px rgba(16,24,40,.08);
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid #e4e8ee;
+    }
+    .page{
+      padding:28px 28px 22px;
+      page-break-after:always;
+    }
+    .page:last-child{page-break-after:auto;}
+    .brand{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:18px;
+    }
+    .logo-box{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      color:var(--blue);
+    }
+    .brand small{
+      display:block;
+      color:#4b5563;
+      line-height:1.45;
+      margin-top:4px;
+    }
+    .title{
+      text-align:center;
+      margin:14px 0 12px;
+    }
+    .title h2{
+      margin:0 0 8px;
+      font-size:34px;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:0;
+      text-align:left;
+      font-size:14px;
+    }
+    .consent-inline{
+      margin:14px 0 10px;
+      padding:14px;
+      background:#f8fbff;
+      border:1px solid #dceaf7;
+      border-radius:12px;
+      font-size:13px;
+      line-height:1.45;
+    }
+    .checkline{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin:8px 0;
+    }
+    .section-label{
+      background:#111;
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      padding:8px 10px;
+      margin:18px 0 0;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+    table.form-table{
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      font-size:12px;
+    }
+    .form-table td, .form-table th{
+      border:1px solid #424242;
+      padding:6px;
+      vertical-align:top;
+    }
+    .form-table th{
+      text-align:left;
+      background:#fafafa;
+    }
+    .field-label{
+      display:block;
+      font-size:11px;
+      font-weight:700;
+      margin-bottom:4px;
+      text-transform:uppercase;
+      color:#374151;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="date"],
+    input[type="tel"],
+    textarea,
+    select{
+      width:100%;
+      border:1px solid #ccd5df;
+      border-radius:6px;
+      padding:7px 8px;
+      font:inherit;
+      background:#fff;
+      min-height:34px;
+    }
+    textarea{min-height:72px; resize:vertical;}
+    .inline-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+    }
+    .inline-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+    .checkbox-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px 16px;
+      margin-top:6px;
+    }
+    .checkbox-grid label,
+    .mini-check label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+    }
+    .mini-check{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+    .terms{
+      font-size:12px;
+      line-height:1.45;
+      white-space:pre-line;
+    }
+    .terms p{margin:0 0 10px}
+    .signature-wrap{
+      margin-top:8px;
+      border:1px solid #cdd8e5;
+      border-radius:10px;
+      padding:10px;
+      background:#fbfdff;
+    }
+    .signature-pad{
+      width:100%;
+      height:180px;
+      border:1px dashed #7a8ca2;
+      border-radius:10px;
+      background:#fff;
+      touch-action:none;
+      display:block;
+    }
+    .signature-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .muted{
+      color:#6b7280;
+      font-size:12px;
+    }
+    .sign-grid{
+      display:grid;
+      grid-template-columns:2fr 1.2fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    .audit{
+      margin-top:14px;
+      background:#f8fafc;
+      border:1px solid #d9e2ec;
+      border-radius:10px;
+      padding:12px;
+      font-size:12px;
+    }
+    .footnote{
+      margin-top:12px;
+      font-size:11px;
+      color:#4b5563;
+      line-height:1.45;
+    }
+    .print-only{display:none;}
+    .preview-note{
+      margin:16px 0 0;
+      font-size:12px;
+      color:#475467;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      padding:10px 12px;
+      border-radius:10px;
+    }
+    .field-wrap{display:flex;flex-direction:column}
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    #typeSignatureLayer{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:180px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      border:1px dashed #7a8ca2;
+      border-radius:10px;
+      background:#fff;
+    }
+    #typedSignature{
+      position:absolute;
+      top:10px;
+      left:10px;
+      right:10px;
+      padding:6px;
+      width:auto;
+    }
+    #typedPreview{
+      font-family:'Brush Script MT','Lucida Handwriting',cursive;
+      font-size:36px;
+      pointer-events:none;
+      text-align:center;
+      padding-top:18px;
+      width:100%;
+    }
 
-<title>MIP Credit Application</title>
+    @media (max-width: 780px){
+      .page{padding:18px 14px;}
+      .sign-grid, .inline-grid{grid-template-columns:1fr;}
+      .inline-2{grid-template-columns:1fr;}
+      .title h2{font-size:26px;}
+    }
 
-<style>
-
-/* ===== BASE ===== */
-body{
-  margin:0;
-  font-family:Arial;
-  background:#eef2f6;
+    @media print{
+      body{background:#fff;}
+      .topbar{display:none !important;}
+      .container{max-width:none; margin:0; padding:0;}
+      .doc{box-shadow:none; border:0; border-radius:0;}
+      .page{padding:18mm 14mm; min-height:270mm;}
+      .screen-only{display:none !important;}
+      .print-only{display:block !important;}
+      input, textarea, select{
+        border:1px solid transparent;
+        padding:0;
+        min-height:auto;
+        background:transparent;
+      }
+      .signature-wrap{
+        border:1px solid #999;
+        background:#fff;
+      }
+      .signature-pad{
+        border:0;
+      }
+      .preview-note{display:none;}
+    }
+    
+ 
+/* Improve spacing */
+.pdf-mode .sign-grid {
+  gap: 18px !important;
 }
-
-.container{
-  max-width:1000px;
-  margin:20px auto;
-  padding:0 12px;
-}
-
-/* ===== CARD UI ===== */
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:18px;
-  margin-bottom:18px;
-  border:1px solid #e5e7eb;
-}
-
-.section-title{
-  font-size:16px;
-  font-weight:700;
-  margin-bottom:12px;
-}
-
-/* ===== FIELDS ===== */
-.field{
-  display:flex;
-  flex-direction:column;
-  margin-bottom:12px;
-}
-
-.field label{
-  font-size:11px;
-  font-weight:600;
-  margin-bottom:4px;
-}
-
-.field input,
-.field textarea{
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  padding:10px;
-  font-size:13px;
-}
-
-/* ===== GRID ===== */
-.grid-2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.grid-3{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:12px;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-  .grid-2,.grid-3{
-    grid-template-columns:1fr;
-  }
-}
-
-/* ===== BUTTON ===== */
-button{
-  padding:12px;
-  background:#0f7cc2;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-</style>
+  </style>
 </head>
-
 <body>
-
-<div class="container">
-
-<form id="form">
-
-<!-- HEADER -->
-<div class="card">
-  <h2 style="margin:0;text-align:center;">CREDIT APPLICATION</h2>
-</div>
-
-<!-- COMPANY -->
-<div class="card">
-  <div class="section-title">Company Info</div>
-
-  <div class="field">
-    <label>Legal Company Name</label>
-    <input name="company">
-  </div>
-
-  <div class="grid-2">
-    <div class="field">
-      <label>Phone</label>
-      <input name="phone">
-    </div>
-
-    <div class="field">
-      <label>EIN</label>
-      <input name="ein">
+  <div class="topbar screen-only">
+    <div class="left">MIP Cargo Express • Credit Application</div>
+    <div class="actions">
+      <button class="btn-secondary" type="button" onclick="clearSignature()">Clear Signature</button>
+      <button class="btn-secondary" type="button" onclick="saveDraft()">Save Draft</button>
+      <button class="btn-primary" type="button" onclick="preparePdf()">Generate PDF</button>
     </div>
   </div>
 
-  <div class="field">
-    <label>Address</label>
-    <input name="address">
+  <div class="container">
+    <form id="creditAppForm" class="doc">
+      <section class="page">
+        <div class="brand">
+          <div class="logo-box">
+            <img src="https://static.wixstatic.com/media/b572e1_fbf841487b044ed39fc0bcfaeb17f41d~mv2.png/v1/fill/w_246,h_164,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/IMG_2032.png" style="height:62px;object-fit:contain;">
+            <div>
+              <h1>MIP Cargo Express</h1>
+              <small>
+                1350 NW 129 Avenue Unit 100<br>
+                Miami, FL 33182<br>
+                Phone: (786) 427-5348<br>
+                E-mail: admin@mipcargoexp.com
+              </small>
+            </div>
+          </div>
+          <div style="text-align:right; font-size:12px;">
+            <div><strong>Document:</strong> Credit Application and Agreement</div>
+            <div><strong>Generated:</strong> <span id="generatedNow">—</span></div>
+          </div>
+        </div>
+
+        <div class="title">
+          <h2>CREDIT APPLICATION AND AGREEMENT</h2>
+        </div>
+
+        <p class="subtitle">Applicant, identified below, hereby applies for credit with:</p>
+
+        <div class="consent-inline">
+          <div class="checkline">
+            <input type="checkbox" id="carrier_mip" checked />
+            <label for="carrier_mip"><strong>MIP Cargo Express</strong></label>
+          </div>
+          <div class="checkline">
+            <input type="checkbox" id="agreement_ack" required />
+            <label for="agreement_ack">
+              By checking the boxes above and signing below, Customer agrees to the terms of this Credit Application and Agreement and confirms that the signer is authorized to bind the Customer.
+            </label>
+          </div>
+          <div class="checkline">
+            <input type="checkbox" id="esign_ack" required />
+            <label for="esign_ack">
+              I consent to use an electronic signature and electronic records for this agreement.
+            </label>
+          </div>
+        </div>
+
+        <div class="section-label">Applicant Information (Required)</div>
+        <table class="form-table">
+          <tr>
+            <td style="width:47%">
+              <label class="field-label" for="legalCompanyName">Legal Company Name</label>
+              <input id="legalCompanyName" name="legalCompanyName" type="text" required>
+            </td>
+            <td style="width:26%">
+              <label class="field-label" for="phoneNumber">Phone Number</label>
+              <input id="phoneNumber" name="phoneNumber" type="tel">
+            </td>
+            <td style="width:27%">
+              <label class="field-label" for="ein">Employer ID (EIN) or SSN</label>
+              <input id="ein" name="ein" type="text">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="field-label" for="dba">DBA (If Any)</label>
+              <input id="dba" name="dba" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="duns">D&amp;B / DUNS #</label>
+              <input id="duns" name="duns" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="yearsInBusiness">Years in Business</label>
+              <input id="yearsInBusiness" name="yearsInBusiness" type="text">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="field-label" for="physicalAddress">Physical Address</label>
+              <input id="physicalAddress" name="physicalAddress" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="employees">No. of Employees</label>
+              <input id="employees" name="employees" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="creditLimitRequested">Credit Limit Requested</label>
+              <input id="creditLimitRequested" name="creditLimitRequested" type="text">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="field-label" for="billingAddress">Billing Address (If Different)</label>
+              <input id="billingAddress" name="billingAddress" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="webAddress">Company Web Address</label>
+              <input id="webAddress" name="webAddress" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="businessDescription">Description of Business</label>
+              <input id="businessDescription" name="businessDescription" type="text">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="field-label" for="apContactName">Accounts Payable Contact Name</label>
+              <input id="apContactName" name="apContactName" type="text">
+            </td>
+            <td>
+              <label class="field-label" for="apPhone">Accounts Payable Phone Number</label>
+              <input id="apPhone" name="apPhone" type="tel">
+            </td>
+            <td>
+              <label class="field-label" for="apEmail">Accounts Payable Email Address</label>
+              <input id="apEmail" name="apEmail" type="email">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <span class="field-label">Business Type (Check and complete one box below)</span>
+              <div class="checkbox-grid">
+                <label><input type="checkbox" name="businessType" value="Corporation"> Corporation</label>
+                <div class="inline-2">
+                  <input name="corpDate" type="text" placeholder="Date of Incorporation">
+                  <input name="stateIncorp" type="text" placeholder="State of Incorporation">
+                </div>
+
+                <label><input type="checkbox" name="businessType" value="LLC"> LLC</label>
+                <input name="parentCorp" type="text" placeholder="Name of Parent Corporation (if any)">
+
+                <label><input type="checkbox" name="businessType" value="Sole Proprietorship"> Sole Proprietorship</label>
+                <div class="inline-grid">
+                  <input name="ownerName" type="text" placeholder="Owner's Name">
+                  <input name="ownerBirthYear" type="text" placeholder="Year of Birth">
+                  <input name="ownerSSN" type="text" placeholder="SSN">
+                </div>
+
+                <label></label>
+                <div class="inline-grid">
+                  <input name="ownerHomeAddress" type="text" placeholder="Home Address">
+                  <input name="ownerCity" type="text" placeholder="City">
+                  <input name="ownerStateZip" type="text" placeholder="State / ZIP">
+                </div>
+
+                <label><input type="checkbox" name="businessType" value="Partnership"> Partnership</label>
+                <div class="inline-grid">
+                  <input name="partner1" type="text" placeholder="Managing Partner">
+                  <input name="partner2" type="text" placeholder="Managing Partner">
+                  <input name="partnerZip" type="text" placeholder="ZIP">
+                </div>
+
+                <label><input type="checkbox" name="businessType" value="LLP"> LLP</label>
+                <div class="inline-2">
+                  <input name="partnerAddress1" type="text" placeholder="Address City, St.">
+                  <input name="partnerAddress2" type="text" placeholder="Address City, St.">
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <div class="section-label">Trade References (Required)</div>
+        <table class="form-table">
+          <tr>
+            <th style="width:46%">Name / Address</th>
+            <th style="width:18%">Contact</th>
+            <th style="width:18%">Phone</th>
+            <th style="width:18%">Fax or Email</th>
+          </tr>
+          <tr>
+            <td><textarea name="tradeRef1Address"></textarea></td>
+            <td><input type="text" name="tradeRef1Contact"></td>
+            <td><input type="text" name="tradeRef1Phone"></td>
+            <td><input type="text" name="tradeRef1Email"></td>
+          </tr>
+          <tr>
+            <td><textarea name="tradeRef2Address"></textarea></td>
+            <td><input type="text" name="tradeRef2Contact"></td>
+            <td><input type="text" name="tradeRef2Phone"></td>
+            <td><input type="text" name="tradeRef2Email"></td>
+          </tr>
+          <tr>
+            <td><textarea name="tradeRef3Address"></textarea></td>
+            <td><input type="text" name="tradeRef3Contact"></td>
+            <td><input type="text" name="tradeRef3Phone"></td>
+            <td><input type="text" name="tradeRef3Email"></td>
+          </tr>
+        </table>
+
+        <div class="preview-note screen-only">
+          This HTML version is modeled on your uploaded MIP credit application. Fill it out, sign, then click <strong>Generate PDF</strong> to print or save as PDF.
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="section-label">Persons Authorized to Give Instructions</div>
+        <table class="form-table">
+          <tr>
+            <th style="width:34%">Name</th>
+            <th style="width:20%">Title</th>
+            <th style="width:28%">Email Address</th>
+            <th style="width:18%">Phone Number</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="authName1"></td>
+            <td><input type="text" name="authTitle1"></td>
+            <td><input type="email" name="authEmail1"></td>
+            <td><input type="text" name="authPhone1"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="authName2"></td>
+            <td><input type="text" name="authTitle2"></td>
+            <td><input type="email" name="authEmail2"></td>
+            <td><input type="text" name="authPhone2"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="authName3"></td>
+            <td><input type="text" name="authTitle3"></td>
+            <td><input type="email" name="authEmail3"></td>
+            <td><input type="text" name="authPhone3"></td>
+          </tr>
+        </table>
+
+        <div class="section-label">Bank References (Required)</div>
+        <table class="form-table">
+          <tr>
+            <th style="width:28%">Name</th>
+            <th style="width:18%">Contact</th>
+            <th style="width:18%">Phone</th>
+            <th style="width:18%">Fax or Email</th>
+            <th style="width:18%">Account Number</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="bankName"></td>
+            <td><input type="text" name="bankContact"></td>
+            <td><input type="text" name="bankPhone"></td>
+            <td><input type="text" name="bankFaxEmail"></td>
+            <td><input type="text" name="bankAccount"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <label class="field-label" for="bankAddress">Address</label>
+              <input id="bankAddress" type="text" name="bankAddress">
+            </td>
+            <td colspan="2">
+              <label class="field-label" for="bankCityStateZip">City / State / ZIP</label>
+              <input id="bankCityStateZip" type="text" name="bankCityStateZip">
+            </td>
+            <td></td>
+          </tr>
+        </table>
+
+        <div class="inline-2" style="margin-top:14px;">
+          <div style="border:1px solid #424242; padding:10px;">
+            <div class="field-label">Invoice Delivery (Check box below)</div>
+            <div class="mini-check">
+              <label><input type="checkbox" name="invoiceDelivery" value="Mail"> Mail</label>
+              <label><input type="checkbox" name="invoiceDelivery" value="Email"> E-mail</label>
+            </div>
+          </div>
+          <div style="border:1px solid #424242; padding:10px;">
+            <div class="field-label">Remittance Via (Check box below)</div>
+            <div class="mini-check">
+              <label><input type="checkbox" name="remittanceVia" value="Check"> Check</label>
+              <label><input type="checkbox" name="remittanceVia" value="EFT/ACH"> EFT/ACH</label>
+              <label><input type="checkbox" name="remittanceVia" value="Wire"> Wire</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="title" style="margin-top:20px;">
+          <h2 style="font-size:28px;">CREDIT TERMS &amp; CONDITIONS</h2>
+        </div>
+
+        <div class="terms">
+          <p><strong>1.</strong> Customer understands that it is Carrier's policy to require full payment of all charges in cash, check, or other immediately available funds prior to delivery of goods and/or services and that Carrier has agreed to alter this policy as to Customer, subject to the terms and conditions of this Agreement; this Agreement is strictly for business, commercial or agricultural products and not for personal, family or household purposes. Preferred methods of payment include check, ACH/EFT, and wire transfer.</p>
+          <p><strong>2.</strong> Customer warrants the accuracy and completeness of all information provided and acknowledges that Carrier shall rely upon such information. If there is a material change in ownership, management, legal structure, name, or financial position, Customer shall immediately inform Carrier.</p>
+          <p><strong>3.</strong> Customer authorizes Carrier to access credit information relating to Customer from any source whatsoever, including banking and trade references, in order to evaluate creditworthiness.</p>
+          <p><strong>4.</strong> If Carrier agrees to extend credit, Carrier may issue an acceptance letter stating the maximum credit limit and any additional terms or conditions, which shall be incorporated into this Agreement.</p>
+          <p><strong>5.</strong> All decisions with respect to credit, including increase, decrease, or termination, remain at Carrier's sole discretion.</p>
+          <p><strong>6.</strong> If outstanding charges exceed the stated credit limit, the excess becomes immediately due and payable, and further credit may be suspended until compliance is restored.</p>
+          <p><strong>7.</strong> Requests for non-standard documentation, reporting, portal entry, or data entry may result in additional charges.</p>
+        </div>
+      </section>
+
+      <section class="page">
+        <div class="terms">
+          <p><strong>8.</strong> Customer agrees to pay Carrier all freight and other charges, without set-off, within thirty (30) days of invoice or as otherwise agreed in writing. Interest on past due amounts shall accrue at one and one-half percent (1.5%) per month.</p>
+          <p><strong>9.</strong> Customer grants Carrier a consensual lien and security interest in all goods in which Customer has any interest whatsoever, whether as shipper, owner, manager, agent, consignee, or otherwise, for payment of amounts due Carrier.</p>
+          <p><strong>10.</strong> Customer agrees to promptly pay or reimburse any legal fees, collection agency fees, costs, storage expenses, and similar expenses relating to collection of amounts due.</p>
+          <p><strong>11.</strong> This Agreement continues while Customer purchases goods or services from Carrier or owes any amount to Carrier, and may be terminated by Carrier at any time upon written notice.</p>
+          <p><strong>12.</strong> This Agreement, together with any acceptance letter issued by Carrier, constitutes the entire agreement and supersedes prior oral or written agreements regarding the matters addressed herein.</p>
+          <p><strong>13.</strong> This Agreement shall be governed by Florida law, and the parties submit to exclusive jurisdiction and venue in Miami, Florida. The substantially prevailing party shall be entitled to recover reasonable legal fees and costs.</p>
+          <p><strong>14.</strong> This Agreement is not valid for invoices relating to duties and taxes that are exempt from payment terms and are due within seven (7) days of invoice date.</p>
+        </div>
+
+        <div class="section-label">Customer Signature</div>
+        <div class="sign-grid">
+          <div>
+            <label class="field-label">E-Signature</label>
+            <div class="signature-wrap">
+              <div style="margin-bottom:6px;font-size:12px">
+                <label style="margin-right:10px">
+                  <input type="radio" name="sigmode" value="draw" checked> Draw
+                </label>
+                <label>
+                  <input type="radio" name="sigmode" value="type"> Type
+                </label>
+              </div>
+
+              <div style="position:relative;height:180px">
+                <canvas id="signaturePad" class="signature-pad" style="position:absolute;top:0;left:0;width:100%;height:180px;"></canvas>
+
+                <div id="typeSignatureLayer">
+                  <input type="text" id="typedSignature" />
+                  <div id="typedPreview"></div>
+                </div>
+              </div>
+
+              <div class="signature-actions screen-only">
+                <span class="muted" id="signatureHint">Draw your signature with mouse, trackpad, or finger.</span>
+                <button class="btn-danger" type="button" onclick="clearSignature()">Clear</button>
+              </div>
+            </div>
+
+            <label class="field-label" for="signerName">Name &amp; Title</label>
+            <input id="signerName" name="signerName" type="text" required>
+            <div style="height:10px"></div>
+            <label class="field-label" for="signDate">Date</label>
+            <input id="signDate" name="signDate" type="date">
+            <div style="height:10px"></div>
+            <label class="field-label" for="signerEmail">Email Address</label>
+            <input id="signerEmail" name="signerEmail" type="email" required>
+          </div>
+
+          <div>
+            <label class="field-label" for="approvedAmount">Approved Amount (Internal Use Only)</label>
+            <input id="approvedAmount" name="approvedAmount" type="text">
+            <div style="height:10px"></div>
+            <label class="field-label" for="authorization">Authorization (Internal Use Only)</label>
+            <input id="authorization" name="authorization" type="text">
+            <div style="height:10px"></div>
+            <label class="field-label" for="authorizationDate">Date (Internal Use Only)</label>
+            <input id="authorizationDate" name="authorizationDate" type="date">
+          </div>
+        </div>
+
+        <div class="section-label">Personal Guarantee</div>
+        <p class="subtitle" style="margin:10px 0 8px;">
+          The undersigned jointly and severally guarantee payment of all sums due or which become due from Customer to Carrier.
+        </p>
+        <div class="inline-2">
+          <div>
+            <label class="field-label" for="guarantor1">Guarantor Signature / Name</label>
+            <input id="guarantor1" name="guarantor1" type="text">
+          </div>
+          <div>
+            <label class="field-label" for="guarantorDate1">Date</label>
+            <input id="guarantorDate1" name="guarantorDate1" type="date">
+          </div>
+          <div>
+            <label class="field-label" for="guarantor2">Guarantor Signature / Name</label>
+            <input id="guarantor2" name="guarantor2" type="text">
+          </div>
+          <div>
+            <label class="field-label" for="guarantorDate2">Date</label>
+            <input id="guarantorDate2" name="guarantorDate2" type="date">
+          </div>
+        </div>
+
+        <div class="audit">
+          <strong>Electronic Signature Audit Trail</strong>
+          <div style="margin-top:8px;" class="inline-grid">
+            <div><strong>Signed At:</strong> <span id="auditTimestamp">Not captured yet</span></div>
+            <div><strong>Timezone:</strong> <span id="auditTimezone">—</span></div>
+            <div><strong>Browser:</strong> <span id="auditBrowser">—</span></div>
+          </div>
+          <div style="margin-top:8px;"><strong>Document ID:</strong> <span id="documentId">—</span></div>
+          <div style="margin-top:8px;"><strong>IP Address:</strong> <span id="auditIp">Client-side HTML cannot securely capture IP; add a webhook/backend if you need it in the audit trail.</span></div>
+        </div>
+
+        <div class="footnote">
+          Customer understands that oral agreements or commitments to loan money, extend credit, or forbear from enforcing repayment of a debt are not enforceable under applicable Florida law.
+          The federal Equal Credit Opportunity Act prohibits discrimination on the basis of race, color, religion, national origin, sex, marital status, age, or because income derives from public assistance, or because the applicant has in good faith exercised rights under consumer credit protection laws.
+        </div>
+      </section>
+    </form>
   </div>
-</div>
 
-<!-- 🔥 BUSINESS TYPE -->
-<div class="card">
-  <div class="section-title">Business Type</div>
+<div id="pdf-content" style="
+  position:fixed;
+  left:0;
+  top:0;
+  width:1000px;
+  background:#fff;
+  display:none;
+"></div>
 
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-    <label><input type="radio" name="type"> Corporation</label>
-    <label><input type="radio" name="type"> LLC</label>
-    <label><input type="radio" name="type"> Sole Prop</label>
-    <label><input type="radio" name="type"> Partnership</label>
-  </div>
+  <script>
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    const typedInput = document.getElementById('typedSignature');
+    const typedPreview = document.getElementById('typedPreview');
+    const typeLayer = document.getElementById('typeSignatureLayer');
+    const signatureHint = document.getElementById('signatureHint');
 
-  <div class="grid-2">
-    <div class="field">
-      <label>Owner Name</label>
-      <input name="owner">
-    </div>
+    let drawing = false;
+    let savedSignatureData = null;
 
-    <div class="field">
-      <label>SSN / EIN</label>
-      <input name="ssn">
-    </div>
-  </div>
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const displayWidth = canvas.offsetWidth || 300;
+      const displayHeight = canvas.offsetHeight || 180;
 
-  <div class="grid-3">
-    <div class="field">
-      <label>City</label>
-      <input name="city">
-    </div>
+      const oldData = savedSignatureData;
 
-    <div class="field">
-      <label>State</label>
-      <input name="state">
-    </div>
+      canvas.width = displayWidth * ratio;
+      canvas.height = displayHeight * ratio;
 
-    <div class="field">
-      <label>ZIP</label>
-      <input name="zip">
-    </div>
-  </div>
-</div>
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(ratio, ratio);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#111';
 
-<!-- TRADE REFERENCES -->
-<div class="card">
-  <div class="section-title">Trade References</div>
+      if (oldData) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.clearRect(0, 0, displayWidth, displayHeight);
+          ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+        };
+        img.src = oldData;
+      } else {
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
+      }
+    }
 
-  <div class="field">
-    <label>Reference 1</label>
-    <input name="ref1">
-  </div>
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+      return { x, y };
+    }
 
-  <div class="field">
-    <label>Reference 2</label>
-    <input name="ref2">
-  </div>
+    function startDraw(e) {
+      if (document.querySelector('input[name="sigmode"]:checked').value !== 'draw') return;
+      drawing = true;
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      e.preventDefault();
+    }
 
-  <div class="field">
-    <label>Reference 3</label>
-    <input name="ref3">
-  </div>
-</div>
+    function draw(e) {
+      if (!drawing) return;
+      const p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      savedSignatureData = canvas.toDataURL('image/png');
+      e.preventDefault();
+    }
 
-<!-- SIGNATURE -->
-<div class="card">
-  <div class="section-title">Signature</div>
+    function stopDraw() {
+      drawing = false;
+    }
 
-  <canvas id="sig" style="width:100%;height:160px;border:1px dashed #000"></canvas>
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive:false });
+    canvas.addEventListener('touchmove', draw, { passive:false });
+    canvas.addEventListener('touchend', stopDraw);
 
-  <div class="field">
-    <label>Name</label>
-    <input name="signName">
-  </div>
+    function clearSignature() {
+      const mode = document.querySelector('input[name="sigmode"]:checked').value;
+      if (mode === 'draw') {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        savedSignatureData = null;
+      } else {
+        typedInput.value = '';
+        typedPreview.textContent = '';
+      }
+    }
 
-  <div class="field">
-    <label>Email</label>
-    <input name="signEmail">
-  </div>
-</div>
+    function generateDocumentId() {
+      const company = (document.getElementById('legalCompanyName').value || 'MIP')
+        .replace(/[^A-Za-z0-9]/g, '')
+        .slice(0, 8)
+        .toUpperCase();
+      const stamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+      return `MIP-CA-${company}-${stamp}`;
+    }
 
-<button type="button" onclick="generate()">Generate PDF</button>
+    function saveDraft() {
+      const form = document.getElementById('creditAppForm');
+      const formData = new FormData(form);
+      const obj = {};
+      formData.forEach((value, key) => {
+        if (obj[key]) {
+          if (!Array.isArray(obj[key])) obj[key] = [obj[key]];
+          obj[key].push(value);
+        } else {
+          obj[key] = value;
+        }
+      });
 
-</form>
+      obj.agreement_ack = document.getElementById('agreement_ack').checked;
+      obj.esign_ack = document.getElementById('esign_ack').checked;
+      obj.carrier_mip = document.getElementById('carrier_mip').checked;
+      obj.sigmode = document.querySelector('input[name="sigmode"]:checked')?.value || 'draw';
+      obj.typedSignature = typedInput.value || '';
+      obj.signatureData = savedSignatureData;
 
-</div>
+      localStorage.setItem('mip_credit_application_draft', JSON.stringify(obj));
+      alert('Draft saved locally in this browser.');
+    }
 
-<script>
+    function loadDraft() {
+      const raw = localStorage.getItem('mip_credit_application_draft');
+      if (!raw) return;
 
-/* ===== SIGNATURE ===== */
-const canvas=document.getElementById('sig');
-const ctx=canvas.getContext('2d');
+      try {
+        const data = JSON.parse(raw);
 
-canvas.width=600;
-canvas.height=160;
+        Object.keys(data).forEach(key => {
+          if (key === 'signatureData' || key === 'typedSignature' || key === 'sigmode') return;
 
-let drawing=false;
-let saved=null;
+          const elements = document.querySelectorAll(`[name="${key}"]`);
+          if (elements.length) {
+            elements.forEach(el => {
+              if (el.type === 'checkbox') {
+                if (Array.isArray(data[key])) {
+                  el.checked = data[key].includes(el.value);
+                } else if (typeof data[key] === 'boolean') {
+                  el.checked = data[key];
+                } else {
+                  el.checked = el.value === data[key] || data[key] === 'on';
+                }
+              } else if (el.type === 'radio') {
+                el.checked = el.value === data[key];
+              } else {
+                el.value = data[key];
+              }
+            });
+          }
 
-canvas.onmousedown=()=>drawing=true;
-canvas.onmouseup=()=>drawing=false;
-canvas.onmousemove=e=>{
-  if(!drawing)return;
-  ctx.lineTo(e.offsetX,e.offsetY);
-  ctx.stroke();
-  saved=canvas.toDataURL();
-};
+          const byId = document.getElementById(key);
+          if (byId) {
+            if (byId.type === 'checkbox') {
+              byId.checked = !!data[key];
+            } else if (!['radio'].includes(byId.type)) {
+              byId.value = data[key];
+            }
+          }
+        });
 
-/* ===== PDF ===== */
-function generate(){
+        if (data.sigmode) {
+          const radio = document.querySelector(`input[name="sigmode"][value="${data.sigmode}"]`);
+          if (radio) radio.checked = true;
+        }
 
-const original=document.getElementById('form');
-const clone=original.cloneNode(true);
+        if (data.typedSignature) {
+          typedInput.value = data.typedSignature;
+          typedPreview.textContent = data.typedSignature;
+        }
 
-/* inputs → text */
-clone.querySelectorAll('input,textarea').forEach(el=>{
-  let value=el.value || '';
-  const div=document.createElement('div');
-  div.textContent=value;
-  div.style.borderBottom='1px solid #000';
-  div.style.padding='2px 0';
-  div.style.wordBreak='break-word';
-  el.replaceWith(div);
-});
+        if (data.signatureData) {
+          savedSignatureData = data.signatureData;
+        }
 
-/* signature */
-const sig=clone.querySelector('#sig');
-if(sig && saved){
-  const img=document.createElement('img');
-  img.src=saved;
-  img.style.height='70px';
-  sig.replaceWith(img);
-}
+        updateSignatureMode();
+        resizeCanvas();
+      } catch (e) {
+        console.error('Draft load failed', e);
+      }
+    }
 
-/* container */
-const wrap=document.createElement('div');
-wrap.style.width='1000px';
-wrap.appendChild(clone);
-document.body.appendChild(wrap);
+    function updateAuditFields() {
+      const now = new Date();
+      document.getElementById('generatedNow').textContent = now.toLocaleString();
+      document.getElementById('auditTimestamp').textContent = now.toLocaleString();
+      document.getElementById('auditTimezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
+      document.getElementById('auditBrowser').textContent = navigator.userAgent;
+      document.getElementById('documentId').textContent = generateDocumentId();
+    }
 
-/* render fix */
-wrap.offsetHeight;
+    function updateSignatureMode() {
+      const mode = document.querySelector('input[name="sigmode"]:checked')?.value || 'draw';
 
-setTimeout(()=>{
-  html2pdf()
-    .set({
-      margin:0,
-      filename:'credit-app.pdf',
-      html2canvas:{scale:2,useCORS:true},
-      jsPDF:{unit:'mm',format:'letter'}
-    })
-    .from(wrap)
-    .save()
-    .then(()=>{
-      document.body.removeChild(wrap);
+      if (mode === 'draw') {
+        canvas.style.display = 'block';
+        typeLayer.style.display = 'none';
+        signatureHint.textContent = 'Draw your signature with mouse, trackpad, or finger.';
+      } else {
+        canvas.style.display = 'none';
+        typeLayer.style.display = 'flex';
+        signatureHint.textContent = 'Type your signature above.';
+      }
+    }
+
+    document.querySelectorAll('input[name="sigmode"]').forEach(radio => {
+      radio.addEventListener('change', updateSignatureMode);
     });
-},500);
 
+    typedInput.addEventListener('input', () => {
+      typedPreview.textContent = typedInput.value;
+    });
+
+    function replaceFieldWithSpan(el) {
+      const span = document.createElement('span');
+      span.style.display = 'block';
+      span.style.minHeight = '16px';
+      span.style.whiteSpace = 'pre-wrap';
+      span.textContent = el.value || '';
+      el.replaceWith(span);
+    }
+
+    function preparePdf() {
+  const form = document.getElementById('creditAppForm');
+  if (!form.reportValidity()) return;
+
+  updateAuditFields();
+
+  const original = document.querySelector('.doc');
+  const clone = original.cloneNode(true);
+
+  // ✅ Convert inputs to clean text
+  clone.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.type === 'radio') return;
+
+    let value = '';
+
+    if (el.type === 'checkbox') {
+      value = el.checked ? '☑' : '☐';
+    } else {
+      value = el.value || '';
+    }
+
+    const div = document.createElement('div');
+    div.style.minHeight = '14px';
+    div.style.padding = '2px 0';
+    div.style.borderBottom = '1px solid #000';
+    div.style.whiteSpace = 'normal';
+    div.style.wordBreak = 'break-word';
+    div.textContent = value;
+
+    el.replaceWith(div);
+  });
+
+  // ✅ Signature fix
+  const sigCanvas = clone.querySelector('#signaturePad');
+  if (sigCanvas) {
+    if (savedSignatureData) {
+      const img = document.createElement('img');
+      img.src = savedSignatureData;
+      img.style.height = '70px';
+      img.style.maxWidth = '100%';
+      sigCanvas.replaceWith(img);
+    } else {
+      sigCanvas.replaceWith(document.createElement('div'));
+    }
+  }
+
+  // ✅ CLEAN CONTAINER (NO FIXED POSITION)
+  const container = document.getElementById('pdf-content');
+  container.innerHTML = '';
+  container.style.display = 'block';
+  container.appendChild(clone);
+
+  // 🔥 FORCE RENDER (critical for iOS)
+  container.offsetHeight;
+
+  setTimeout(() => {
+    html2pdf()
+      .set({
+        margin: 0,
+        filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          scrollY: 0
+        },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      })
+      .from(container)
+      .save()
+      .then(() => {
+        container.style.display = 'none';
+        container.innerHTML = '';
+      });
+
+  }, 600);
 }
+// 👈 important delay
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('input[placeholder]');
+      inputs.forEach(inp => {
+        if (inp.id === 'typedSignature') return;
+        const text = inp.getAttribute('placeholder');
+        if (!text) return;
 
-</script>
+        const wrap = document.createElement('div');
+        wrap.className = 'field-wrap';
+        const label = document.createElement('label');
+        label.className = 'field-label';
+        label.innerText = text;
 
+        inp.parentNode.insertBefore(wrap, inp);
+        wrap.appendChild(label);
+        wrap.appendChild(inp);
+      });
+
+      updateSignatureMode();
+      updateAuditFields();
+      loadDraft();
+
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('load', resizeCanvas);
+      resizeCanvas();
+    });
+    
+    function convertInputsToText(element) {
+  const inputs = element.querySelectorAll('input, textarea, select');
+
+  inputs.forEach(el => {
+    if (el.type === 'radio') return;
+
+    let value = '';
+
+    if (el.type === 'checkbox') {
+      value = el.checked ? '☑' : '☐';
+    } else {
+      value = el.value || '';
+    }
+
+    const div = document.createElement('div');
+    div.style.minHeight = '14px';
+    div.style.padding = '2px 0';
+    div.style.borderBottom = '1px solid #000';
+    div.style.whiteSpace = 'normal';
+    div.style.wordBreak = 'break-word';
+    div.textContent = value;
+
+    el.replaceWith(div);
+  });
+}
+    
+  </script>
 </body>
 </html>
