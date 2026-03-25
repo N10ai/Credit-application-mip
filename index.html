@@ -61,15 +61,13 @@
   margin: 0 auto;
   background: white;
 }
-
-.page {
-  width: 100%;
-  page-break-after: always;
+.container {
+  margin: 0 auto;
 }
 
-.page:last-child {
-  page-break-after: auto;
-}
+
+
+
     .logo-box{
       display:flex;
       align-items:center;
@@ -404,13 +402,13 @@
   }
 }
 .page {
-  page-break-after: always;
+break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 20px;
   box-sizing: border-box;
 }
 
-.page:last-child {
-  page-break-after: auto;
-}
+
 
     * {
   box-sizing: border-box;
@@ -1000,23 +998,26 @@ async function preparePdf() {
     sigCanvas.replaceWith(img);
   }
 
-  html2pdf()
-    .set({
-      margin: 10,
-      filename: `MIP-Credit-App-${document.getElementById('legalCompanyName')?.value || 'Client'}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true
-      },
-      jsPDF: {
-        unit: 'mm',
-        format: 'letter',
-        orientation: 'portrait'
-      }
-    })
-    .from(clone) // ✅ IMPORTANT FIX
-    .save();
+html2pdf()
+  .set({
+    margin: 10,
+    filename: `MIP-Credit-App-${document.getElementById('legalCompanyName')?.value || 'Client'}.pdf`,
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'letter',
+      orientation: 'portrait'
+    },
+    pagebreak: {
+      mode: ['avoid-all', 'css', 'legacy']  // 🔥 THIS FIXES BLANK PAGES
+    }
+  })
+  .from(clone)
+  .save();
 }
 
 /* ================= INIT ================= */
