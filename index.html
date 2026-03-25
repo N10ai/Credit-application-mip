@@ -1062,13 +1062,14 @@
 
   updateAuditFields();
 
+  // Clone document
   const original = document.querySelector('.doc');
   const clone = original.cloneNode(true);
 
-  // 🔥 Convert inputs to real text
+  // Convert inputs → text
   convertInputsToText(clone);
 
-  // 🔥 Handle signature
+  // Handle signature
   const sigCanvas = clone.querySelector('#signaturePad');
   if (sigCanvas && savedSignatureData) {
     const img = document.createElement('img');
@@ -1077,20 +1078,20 @@
     sigCanvas.replaceWith(img);
   }
 
-  // 🔥 PDF styling
+  // Apply PDF styling
   document.body.classList.add('pdf-mode');
 
-  // Temporary container
+  // ✅ IMPORTANT: use NORMAL flow (NOT fixed)
   const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.top = '0';
-  container.style.left = '0';
   container.style.width = '1000px';
   container.style.background = '#fff';
+  container.style.margin = '0 auto';
+  container.style.position = 'relative'; // 🔥 FIX
   container.appendChild(clone);
 
   document.body.appendChild(container);
 
+  // 🔥 iOS SAFE RENDER
   window.scrollTo(0, 0);
 
   setTimeout(() => {
@@ -1099,7 +1100,12 @@
         margin: 0,
         filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          scrollY: 0,
+          windowWidth: document.body.scrollWidth // 🔥 key fix
+        },
         jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
       })
       .from(container)
@@ -1109,7 +1115,7 @@
         document.body.classList.remove('pdf-mode');
       });
 
-  }, 500);
+  }, 600); // slightly longer for iOS
 }
 // 👈 important delay
     document.addEventListener('DOMContentLoaded', function() {
