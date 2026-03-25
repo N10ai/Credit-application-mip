@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MIP Credit Application</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{
+  font-family:Arial;
+  background:#eef2f6;
+  margin:0;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+}
+
+h1{color:#0f7cc2;margin:0;}
+h2{margin-top:25px;}
+
+input, textarea{
+  width:100%;
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:6px;
+  margin-bottom:10px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+canvas{
+  border:1px dashed #999;
+  width:100%;
+  height:150px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  background:#0f7cc2;
+  color:white;
+  border:0;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+/* PDF STYLE */
+.pdf{
+  width:800px;
+  font-size:12px;
+  line-height:1.5;
+}
+.pdf h2{
+  text-align:center;
+}
+.pdf-section{
+  margin-top:20px;
+}
+.pdf-row{
+  border-bottom:1px solid #000;
+  padding:4px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h1>MIP Cargo Express</h1>
+<h2>Credit Application</h2>
+
+<!-- Applicant -->
+<h2>Applicant</h2>
+<input id="legalCompanyName" placeholder="Legal Company Name">
+<input id="phoneNumber" placeholder="Phone">
+<input id="ein" placeholder="EIN / SSN">
+<input id="dba" placeholder="DBA">
+<input id="duns" placeholder="DUNS">
+<input id="years" placeholder="Years in Business">
+<input id="physicalAddress" placeholder="Physical Address">
+<input id="billingAddress" placeholder="Billing Address">
+<input id="web" placeholder="Website">
+<input id="employees" placeholder="Employees">
+<input id="creditLimit" placeholder="Credit Limit">
+<input id="businessDescription" placeholder="Business Description">
+
+<!-- AP -->
+<h2>Accounts Payable</h2>
+<input id="apName" placeholder="Name">
+<input id="apPhone" placeholder="Phone">
+<input id="apEmail" placeholder="Email">
+
+<!-- Business Type -->
+<h2>Business Type</h2>
+<label><input type="radio" name="bt" value="Corporation"> Corporation</label>
+<label><input type="radio" name="bt" value="LLC"> LLC</label>
+<label><input type="radio" name="bt" value="Sole"> Sole</label>
+
+<div class="grid">
+<input id="ownerName" placeholder="Owner Name">
+<input id="ownerSSN" placeholder="SSN">
+<input id="ownerAddress" placeholder="Address">
+<input id="ownerCity" placeholder="City">
+<input id="ownerState" placeholder="State">
+<input id="ownerZip" placeholder="ZIP">
+</div>
+
+<!-- Trade -->
+<h2>Trade References</h2>
+<textarea id="trade1"></textarea>
+<textarea id="trade2"></textarea>
+<textarea id="trade3"></textarea>
+
+<!-- Bank -->
+<h2>Bank</h2>
+<input id="bankName">
+<input id="bankContact">
+<input id="bankPhone">
+<input id="bankAccount">
+
+<!-- Signature -->
+<h2>Signature</h2>
+<canvas id="sig"></canvas>
+<input id="typed" placeholder="Type signature">
+
+<input id="signName" placeholder="Name">
+<input id="signEmail" placeholder="Email">
+
+<button onclick="generatePDF()">Generate PDF</button>
+
+</div>
+</div>
+
+<script>
+const canvas = document.getElementById("sig");
+const ctx = canvas.getContext("2d");
+
+let drawing=false;
+let signatureData=null;
+
+canvas.width=800;
+canvas.height=150;
+
+canvas.onmousedown=()=>drawing=true;
+canvas.onmouseup=()=>drawing=false;
+
+canvas.onmousemove=e=>{
+if(!drawing) return;
+ctx.lineTo(e.offsetX,e.offsetY);
+ctx.stroke();
+signatureData = canvas.toDataURL();
+};
+
+function getData(){
+const data={};
+document.querySelectorAll("input, textarea").forEach(el=>{
+data[el.id]=el.value;
+});
+data.businessType=document.querySelector('input[name="bt"]:checked')?.value;
+return data;
+}
+
+function generatePDF(){
+
+const data=getData();
+
+const pdf=document.createElement("div");
+pdf.className="pdf";
+
+pdf.innerHTML=`
+<h2>MIP Credit Application</h2>
+
+<div class="pdf-section">
+<b>Company:</b> ${data.legalCompanyName}
+<div class="pdf-row"></div>
+
+<b>Phone:</b> ${data.phoneNumber}
+<div class="pdf-row"></div>
+
+<b>EIN:</b> ${data.ein}
+</div>
+
+<div class="pdf-section">
+<b>Business Type:</b> ${data.businessType}
+</div>
+
+<div class="pdf-section">
+<b>Terms:</b><br>
+Customer agrees to pay invoices within 30 days.<br>
+Interest 1.5% monthly.<br>
+Florida jurisdiction.
+</div>
+`;
+
+if(signatureData){
+pdf.innerHTML+=`<img src="${signatureData}" style="height:80px">`;
+}else{
+pdf.innerHTML+=`<p>${data.typed}</p>`;
+}
+
+document.body.appendChild(pdf);
+
+html2pdf()
+.set({
+margin:10,
+filename:"MIP-Credit.pdf",
+html2canvas:{scale:2},
+jsPDF:{unit:'mm',format:'letter'}
+})
+.from(pdf)
+.save()
+.then(()=>{
+pdf.remove();
+});
+
+// webhook
+fetch("YOUR_WEBHOOK_URL",{
+method:"POST",
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify(data)
+});
+}
+</script>
+
+</body>
+</html>
