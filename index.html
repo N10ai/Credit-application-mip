@@ -326,11 +326,37 @@
       .preview-note{display:none;}
     }
     
- 
-/* Improve spacing */
-.pdf-mode .sign-grid {
-  gap: 18px !important;
+ #pdf-content {
+  width: 794px; /* exact PDF width */
+  margin: 0 auto;
+  background: #fff;
 }
+
+/* Fix layout scaling */
+.pdf-export .doc {
+  width: 794px !important;
+  margin: 0 auto;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Fix tables */
+.pdf-export .form-table {
+  table-layout: auto !important;
+}
+
+.pdf-export .form-table td,
+.pdf-export .form-table th {
+  word-break: break-word;
+}
+
+/* Prevent text cutting */
+.pdf-export div {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
   </style>
 </head>
 <body>
@@ -734,15 +760,7 @@
     </form>
   </div>
 
-<div id="pdf-content" style="
-  position:fixed;
-  left:0;
-  top:0;
-  width:1000px;
-  background:#fff;
-  display:none;
-"></div>
-
+<div id="pdf-content"></div>
   <script>
     const canvas = document.getElementById('signaturePad');
     const ctx = canvas.getContext('2d');
@@ -985,7 +1003,7 @@
     }
 
     const div = document.createElement('div');
-    div.style.minHeight = '14px';
+    div.style.minHeight = '16px';
     div.style.padding = '2px 0';
     div.style.borderBottom = '1px solid #000';
     div.style.whiteSpace = 'normal';
@@ -995,7 +1013,7 @@
     el.replaceWith(div);
   });
 
-  // ✅ Signature fix
+  // ✅ Signature
   const sigCanvas = clone.querySelector('#signaturePad');
   if (sigCanvas) {
     if (savedSignatureData) {
@@ -1009,33 +1027,39 @@
     }
   }
 
-  // ✅ CLEAN CONTAINER (NO FIXED POSITION)
+  // ✅ Insert into container
   const container = document.getElementById('pdf-content');
   container.innerHTML = '';
-  container.style.display = 'block';
   container.appendChild(clone);
 
-  // 🔥 FORCE RENDER (critical for iOS)
+  // ✅ Apply PDF layout class
+  container.classList.add('pdf-export');
+
+  // 🔥 FORCE RENDER
   container.offsetHeight;
 
   setTimeout(() => {
     html2pdf()
       .set({
-        margin: 0,
+        margin: [10, 10, 10, 10],
         filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
+        html2canvas: {
           scale: 2,
           useCORS: true,
           scrollY: 0
         },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+        jsPDF: {
+          unit: 'mm',
+          format: 'letter',
+          orientation: 'portrait'
+        }
       })
       .from(container)
       .save()
       .then(() => {
-        container.style.display = 'none';
         container.innerHTML = '';
+        container.classList.remove('pdf-export');
       });
 
   }, 600);
