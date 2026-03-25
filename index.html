@@ -940,6 +940,20 @@ const clone = doc.cloneNode(true);
   // Handle signature
   const sigCanvas = clone.querySelector('#signaturePad');
 
+if (sigCanvas) {
+  const parent = sigCanvas.parentNode;
+
+  if (savedSignatureData) {
+    const img = document.createElement('img');
+    img.src = savedSignatureData;
+    img.style.height = '80px';
+    parent.innerHTML = '';
+    parent.appendChild(img);
+  } else {
+    parent.innerHTML = '<div style="height:80px;"></div>';
+  }
+}
+
   if (sigCanvas) {
     const parent = sigCanvas.parentNode;
 
