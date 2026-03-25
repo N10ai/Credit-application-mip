@@ -1058,38 +1058,83 @@
       el.replaceWith(span);
     }
 
-const container = document.getElementById('pdf-content');
+function preparePdf() {
+  const form = document.getElementById('creditAppForm');
+  if (!form.reportValidity()) return;
 
-container.innerHTML = '';
-container.style.display = 'block';
+  updateAuditFields();
 
-// 👇 IMPORTANT: force normal flow
-container.style.position = 'relative';
+  const original = document.querySelector('.doc');
+  const clone = original.cloneNode(true);
 
-container.appendChild(clone);
+  // ✅ Convert inputs → clean text
+  clone.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.type === 'radio') return;
 
-// 👇 CRITICAL: wait for layout render
-setTimeout(() => {
+    let value = '';
 
-  html2pdf()
-    .set({
-      margin: 0,
-      filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true
-      },
-      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-    })
-    .from(container)
-    .save()
-    .then(() => {
-      container.style.display = 'none';
-      container.innerHTML = '';
-    });
+    if (el.type === 'checkbox') {
+      value = el.checked ? '☑' : '☐';
+    } else {
+      value = el.value || '';
+    }
 
-}, 800); // 👈 give more time on iOS
+    const div = document.createElement('div');
+    div.style.minHeight = '14px';
+    div.style.padding = '2px 0';
+    div.style.borderBottom = '1px solid #000';
+    div.style.whiteSpace = 'normal';
+    div.style.wordBreak = 'break-word';
+    div.textContent = value;
+
+    el.replaceWith(div);
+  });
+
+  // ✅ Signature fix
+  const sigCanvas = clone.querySelector('#signaturePad');
+  if (sigCanvas) {
+    if (savedSignatureData) {
+      const img = document.createElement('img');
+      img.src = savedSignatureData;
+      img.style.height = '70px';
+      img.style.maxWidth = '100%';
+      sigCanvas.replaceWith(img);
+    } else {
+      sigCanvas.replaceWith(document.createElement('div'));
+    }
+  }
+
+  // ✅ Container
+  const container = document.getElementById('pdf-content');
+  container.innerHTML = '';
+  container.style.display = 'block';
+  container.style.position = 'relative';
+  container.appendChild(clone);
+
+  // Force render
+  container.offsetHeight;
+
+  setTimeout(() => {
+    html2pdf()
+      .set({
+        margin: 0,
+        filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true
+        },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      })
+      .from(container)
+      .save()
+      .then(() => {
+        container.style.display = 'none';
+        container.innerHTML = '';
+      });
+
+  }, 800);
+}
 // 👈 important delay
     document.addEventListener('DOMContentLoaded', function() {
       const inputs = document.querySelectorAll('input[placeholder]');
