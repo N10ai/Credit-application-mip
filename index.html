@@ -907,7 +907,8 @@ pointer-events:none;
   if (!form.reportValidity()) return;
 
   // Clone the real document
-  const clone = form.cloneNode(true);
+ const doc = document.querySelector('.doc');
+const clone = doc.cloneNode(true);
 
   // Convert inputs to static text
   const inputs = clone.querySelectorAll('input, textarea, select');
@@ -965,6 +966,7 @@ pointer-events:none;
   container.appendChild(clone);
 
   // Generate PDF
+  requestAnimationFrame(() => {
   setTimeout(() => {
     html2pdf()
       .set({
@@ -976,8 +978,8 @@ pointer-events:none;
       })
       .from(container)
       .save();
-  }, 300);
-}
+  }, 500);
+});
     
   </script>
 
@@ -1000,12 +1002,14 @@ document.addEventListener("DOMContentLoaded",function(){
 });
 </script>
 <div id="pdf-content" style="
-  position:absolute;
-  left:-9999px;
+  position:fixed;
   top:0;
+  left:0;
   width:800px;
   background:white;
-  padding:20px;
+  z-index:-1;
+  opacity:0;
+  pointer-events:none;
 "></div>
 </body>
 </html>
