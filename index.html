@@ -405,8 +405,8 @@
   }
 }
 .page {
-  width: 816px;
-  min-height: 1056px; /* 11in × 96 */
+  width: 794px;
+  min-height: 1123px; /* better for html2pdf */
   margin: 0 auto;
   page-break-after: always;
   box-sizing: border-box;
@@ -414,6 +414,19 @@
 
 .page:last-child {
   page-break-after: auto;
+}
+
+    * {
+  box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  page-break-inside: avoid;
+}
+
+tr, td {
+  page-break-inside: avoid;
 }
     
   </style>
@@ -1162,20 +1175,20 @@ async function preparePdf() {
   // Force render
   container.offsetHeight;
 
-  setTimeout(() => {
+setTimeout(() => {
   html2pdf()
     .set({
       margin: 0,
       filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
+      image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
-        scale: 2,
+        scale: 1.6,
         useCORS: true,
         scrollY: 0
       },
       jsPDF: {
-        unit: 'px',                  // ✅ CRITICAL FIX
-        format: [816, 1056],         // ✅ MATCH HTML SIZE
+        unit: 'px',
+        format: [794, 1123], // ✅ FIXED DIMENSIONS (THIS IS THE KEY)
         orientation: 'portrait'
       }
     })
