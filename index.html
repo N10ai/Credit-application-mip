@@ -52,29 +52,25 @@
     .btn-secondary{background:#e8eef5; color:#12263a;}
     .btn-danger{background:#ffe5e5; color:#9a1c1c;}
     .container{
-      max-width:1000px;
+      
       margin:24px auto 60px;
       padding:0 16px;
     }
-    .doc{
-      background:#fff;
-      box-shadow:0 10px 30px rgba(16,24,40,.08);
-      border-radius:18px;
-      overflow:hidden;
-      border:1px solid #e4e8ee;
-    }
-    .page{
-      padding:28px 28px 22px;
-      page-break-after:always;
-    }
-    .page:last-child{page-break-after:auto;}
-    .brand{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:18px;
-      margin-bottom:18px;
-    }
+    .doc {
+  width: 816px;
+  margin: auto;
+}
+
+.page {
+  width: 816px;
+  min-height: 1056px;
+  page-break-after: always;
+  box-sizing: border-box;
+}
+
+.page:last-child {
+  page-break-after: auto;
+}
     .logo-box{
       display:flex;
       align-items:center;
@@ -408,7 +404,18 @@
     grid-column: span 1;
   }
 }
+.page {
+  width: 816px;
+  min-height: 1056px; /* 11in × 96 */
+  margin: 0 auto;
+  page-break-after: always;
+  box-sizing: border-box;
+}
 
+.page:last-child {
+  page-break-after: auto;
+}
+    
   </style>
 </head>
 <body>
@@ -833,10 +840,10 @@
   </div>
 
 <div id="pdf-content" style="
-  width:1000px;
-  background:#fff;
-  display:none;
-  margin:auto;
+  width: 816px;
+  margin: auto;
+  background: white;
+  display: none;
 "></div>
 
   <script>
@@ -1156,26 +1163,30 @@ async function preparePdf() {
   container.offsetHeight;
 
   setTimeout(() => {
-    html2pdf()
-      .set({
-        margin: 0,
-        filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true
-        },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-      })
-      .from(container)
-      .save()
-      .then(() => {
-        container.style.display = 'none';
-        container.innerHTML = '';
-      });
+  html2pdf()
+    .set({
+      margin: 0,
+      filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollY: 0
+      },
+      jsPDF: {
+        unit: 'px',                  // ✅ CRITICAL FIX
+        format: [816, 1056],         // ✅ MATCH HTML SIZE
+        orientation: 'portrait'
+      }
+    })
+    .from(container)
+    .save()
+    .then(() => {
+      container.style.display = 'none';
+      container.innerHTML = '';
+    });
 
-  }, 800);
-}
+}, 500);
 // 👈 important delay
     document.addEventListener('DOMContentLoaded', function() {
       const inputs = document.querySelectorAll('input[placeholder]');
