@@ -865,280 +865,106 @@ tr, td {
 "></div>
 
   <script>
-    const canvas = document.getElementById('signaturePad');
-    const ctx = canvas.getContext('2d');
-    const typedInput = document.getElementById('typedSignature');
-    const typedPreview = document.getElementById('typedPreview');
-    const typeLayer = document.getElementById('typeSignatureLayer');
-    const signatureHint = document.getElementById('signatureHint');
+const canvas = document.getElementById('signaturePad');
+const ctx = canvas.getContext('2d');
+const typedInput = document.getElementById('typedSignature');
+const typedPreview = document.getElementById('typedPreview');
+const typeLayer = document.getElementById('typeSignatureLayer');
+const signatureHint = document.getElementById('signatureHint');
 
-    let drawing = false;
-    let savedSignatureData = null;
+let drawing = false;
+let savedSignatureData = null;
 
-    function resizeCanvas() {
-      const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      const displayWidth = canvas.offsetWidth || 300;
-      const displayHeight = canvas.offsetHeight || 180;
+/* ================= SIGNATURE ================= */
 
-      const oldData = savedSignatureData;
+function resizeCanvas() {
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  const displayWidth = canvas.offsetWidth || 300;
+  const displayHeight = canvas.offsetHeight || 180;
 
-      canvas.width = displayWidth * ratio;
-      canvas.height = displayHeight * ratio;
+  canvas.width = displayWidth * ratio;
+  canvas.height = displayHeight * ratio;
 
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(ratio, ratio);
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#111';
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(ratio, ratio);
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#111';
+}
 
-      if (oldData) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.clearRect(0, 0, displayWidth, displayHeight);
-          ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
-        };
-        img.src = oldData;
-      } else {
-        ctx.clearRect(0, 0, displayWidth, displayHeight);
-      }
-    }
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  return { x, y };
+}
 
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-      return { x, y };
-    }
+function startDraw(e) {
+  if (document.querySelector('input[name="sigmode"]:checked').value !== 'draw') return;
+  drawing = true;
+  const p = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  e.preventDefault();
+}
 
-    function startDraw(e) {
-      if (document.querySelector('input[name="sigmode"]:checked').value !== 'draw') return;
-      drawing = true;
-      const p = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      e.preventDefault();
-    }
+function draw(e) {
+  if (!drawing) return;
+  const p = getPos(e);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+  savedSignatureData = canvas.toDataURL('image/png');
+  e.preventDefault();
+}
 
-    function draw(e) {
-      if (!drawing) return;
-      const p = getPos(e);
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-      savedSignatureData = canvas.toDataURL('image/png');
-      e.preventDefault();
-    }
+function stopDraw() {
+  drawing = false;
+}
 
-    function stopDraw() {
-      drawing = false;
-    }
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDraw);
+canvas.addEventListener('mouseleave', stopDraw);
+canvas.addEventListener('touchstart', startDraw, { passive:false });
+canvas.addEventListener('touchmove', draw, { passive:false });
+canvas.addEventListener('touchend', stopDraw);
 
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDraw);
-    canvas.addEventListener('mouseleave', stopDraw);
-    canvas.addEventListener('touchstart', startDraw, { passive:false });
-    canvas.addEventListener('touchmove', draw, { passive:false });
-    canvas.addEventListener('touchend', stopDraw);
+function clearSignature() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  savedSignatureData = null;
+  typedInput.value = '';
+  typedPreview.textContent = '';
+}
 
-    function clearSignature() {
-      const mode = document.querySelector('input[name="sigmode"]:checked').value;
-      if (mode === 'draw') {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        savedSignatureData = null;
-      } else {
-        typedInput.value = '';
-        typedPreview.textContent = '';
-      }
-    }
+function updateSignatureMode() {
+  const mode = document.querySelector('input[name="sigmode"]:checked')?.value || 'draw';
 
-    function generateDocumentId() {
-      const company = (document.getElementById('legalCompanyName').value || 'MIP')
-        .replace(/[^A-Za-z0-9]/g, '')
-        .slice(0, 8)
-        .toUpperCase();
-      const stamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
-      return `MIP-CA-${company}-${stamp}`;
-    }
-
-    function saveDraft() {
-      const form = document.getElementById('creditAppForm');
-      const formData = new FormData(form);
-      const obj = {};
-      formData.forEach((value, key) => {
-        if (obj[key]) {
-          if (!Array.isArray(obj[key])) obj[key] = [obj[key]];
-          obj[key].push(value);
-        } else {
-          obj[key] = value;
-        }
-      });
-
-      obj.agreement_ack = document.getElementById('agreement_ack').checked;
-      obj.esign_ack = document.getElementById('esign_ack').checked;
-      obj.carrier_mip = document.getElementById('carrier_mip').checked;
-      obj.sigmode = document.querySelector('input[name="sigmode"]:checked')?.value || 'draw';
-      obj.typedSignature = typedInput.value || '';
-      obj.signatureData = savedSignatureData;
-
-      localStorage.setItem('mip_credit_application_draft', JSON.stringify(obj));
-      alert('Draft saved locally in this browser.');
-    }
-
-    function loadDraft() {
-      const raw = localStorage.getItem('mip_credit_application_draft');
-      if (!raw) return;
-
-      try {
-        const data = JSON.parse(raw);
-
-        Object.keys(data).forEach(key => {
-          if (key === 'signatureData' || key === 'typedSignature' || key === 'sigmode') return;
-
-          const elements = document.querySelectorAll(`[name="${key}"]`);
-          if (elements.length) {
-            elements.forEach(el => {
-              if (el.type === 'checkbox') {
-                if (Array.isArray(data[key])) {
-                  el.checked = data[key].includes(el.value);
-                } else if (typeof data[key] === 'boolean') {
-                  el.checked = data[key];
-                } else {
-                  el.checked = el.value === data[key] || data[key] === 'on';
-                }
-              } else if (el.type === 'radio') {
-                el.checked = el.value === data[key];
-              } else {
-                el.value = data[key];
-              }
-            });
-          }
-
-          const byId = document.getElementById(key);
-          if (byId) {
-            if (byId.type === 'checkbox') {
-              byId.checked = !!data[key];
-            } else if (!['radio'].includes(byId.type)) {
-              byId.value = data[key];
-            }
-          }
-        });
-
-        if (data.sigmode) {
-          const radio = document.querySelector(`input[name="sigmode"][value="${data.sigmode}"]`);
-          if (radio) radio.checked = true;
-        }
-
-        if (data.typedSignature) {
-          typedInput.value = data.typedSignature;
-          typedPreview.textContent = data.typedSignature;
-        }
-
-        if (data.signatureData) {
-          savedSignatureData = data.signatureData;
-        }
-
-        updateSignatureMode();
-        resizeCanvas();
-      } catch (e) {
-        console.error('Draft load failed', e);
-      }
-    }
-
-    function updateAuditFields() {
-      const now = new Date();
-      document.getElementById('generatedNow').textContent = now.toLocaleString();
-      document.getElementById('auditTimestamp').textContent = now.toLocaleString();
-      document.getElementById('auditTimezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
-      document.getElementById('auditBrowser').textContent = navigator.userAgent;
-      document.getElementById('documentId').textContent = generateDocumentId();
-    }
-
-    function updateSignatureMode() {
-      const mode = document.querySelector('input[name="sigmode"]:checked')?.value || 'draw';
-
-      if (mode === 'draw') {
-        canvas.style.display = 'block';
-        typeLayer.style.display = 'none';
-        signatureHint.textContent = 'Draw your signature with mouse, trackpad, or finger.';
-      } else {
-        canvas.style.display = 'none';
-        typeLayer.style.display = 'flex';
-        signatureHint.textContent = 'Type your signature above.';
-      }
-    }
-
-    document.querySelectorAll('input[name="sigmode"]').forEach(radio => {
-      radio.addEventListener('change', updateSignatureMode);
-    });
-
-    typedInput.addEventListener('input', () => {
-      typedPreview.textContent = typedInput.value;
-    });
-
-    function replaceFieldWithSpan(el) {
-      const span = document.createElement('span');
-      span.style.display = 'block';
-      span.style.minHeight = '16px';
-      span.style.whiteSpace = 'pre-wrap';
-      span.textContent = el.value || '';
-      el.replaceWith(span);
-    }
-async function sendToWebhook() {
-  const form = document.getElementById('creditAppForm');
-  const formData = new FormData(form);
-
-  const data = {};
-
-  formData.forEach((value, key) => {
-    if (data[key]) {
-      if (!Array.isArray(data[key])) data[key] = [data[key]];
-      data[key].push(value);
-    } else {
-      data[key] = value;
-    }
-  });
-
-  // Add metadata
-  data.timestamp = new Date().toISOString();
-  data.userAgent = navigator.userAgent;
-  data.documentId = document.getElementById('documentId')?.textContent || '';
-
-  // Signature
-  data.signature = savedSignatureData || typedInput.value || null;
-
-  try {
-    await fetch("https://n8n-n10ai.onrender.com/webhook/31a8f4df-1c5d-4147-91a5-3bed9efe57e4", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    console.log("✅ Webhook sent");
-  } catch (error) {
-    console.error("❌ Webhook failed", error);
+  if (mode === 'draw') {
+    canvas.style.display = 'block';
+    typeLayer.style.display = 'none';
+  } else {
+    canvas.style.display = 'none';
+    typeLayer.style.display = 'flex';
   }
 }
 
-    
-async function preparePdf() {
-  const form = document.getElementById('creditAppForm');
-  if (!form.reportValidity()) return;
+document.querySelectorAll('input[name="sigmode"]').forEach(radio => {
+  radio.addEventListener('change', updateSignatureMode);
+});
 
-  // 🔥 ALWAYS send webhook first
-  await sendToWebhook();
-  updateAuditFields();
+typedInput.addEventListener('input', () => {
+  typedPreview.textContent = typedInput.value;
+});
 
-  const original = document.querySelector('.doc');
-  const clone = original.cloneNode(true);
+/* ================= PDF ================= */
 
-  // ✅ Convert inputs → clean text
-  clone.querySelectorAll('input, textarea, select').forEach(el => {
+function convertInputsToText(element) {
+  const inputs = element.querySelectorAll('input, textarea, select');
+
+  inputs.forEach(el => {
     if (el.type === 'radio') return;
 
     let value = '';
-
     if (el.type === 'checkbox') {
       value = el.checked ? '☑' : '☐';
     } else {
@@ -1147,40 +973,37 @@ async function preparePdf() {
 
     const div = document.createElement('div');
     div.style.minHeight = '14px';
-    div.style.padding = '2px 0';
     div.style.borderBottom = '1px solid #000';
-    div.style.whiteSpace = 'normal';
+    div.style.padding = '2px 0';
     div.style.wordBreak = 'break-word';
     div.textContent = value;
 
     el.replaceWith(div);
   });
+}
 
-  // ✅ Signature fix
+async function preparePdf() {
+  const form = document.getElementById('creditAppForm');
+  if (!form.reportValidity()) return;
+
+  const original = document.querySelector('.doc');
+  const clone = original.cloneNode(true);
+
+  convertInputsToText(clone);
+
+  // Signature fix
   const sigCanvas = clone.querySelector('#signaturePad');
-  if (sigCanvas) {
-    if (savedSignatureData) {
-      const img = document.createElement('img');
-      img.src = savedSignatureData;
-      img.style.height = '70px';
-      img.style.maxWidth = '100%';
-      sigCanvas.replaceWith(img);
-    } else {
-      sigCanvas.replaceWith(document.createElement('div'));
-    }
+  if (sigCanvas && savedSignatureData) {
+    const img = document.createElement('img');
+    img.src = savedSignatureData;
+    img.style.height = '70px';
+    sigCanvas.replaceWith(img);
   }
-
-
-
-setTimeout(() => {
-function generatePDF() {
-
-  const element = document.querySelector('.doc');
 
   html2pdf()
     .set({
       margin: 10,
-      filename: `MIP-Credit-App-${document.getElementById('legalCompanyName').value || 'Client'}.pdf`,
+      filename: `MIP-Credit-App-${document.getElementById('legalCompanyName')?.value || 'Client'}.pdf`,
       image: { type: 'jpeg', quality: 1 },
       html2canvas: {
         scale: 2,
@@ -1192,65 +1015,16 @@ function generatePDF() {
         orientation: 'portrait'
       }
     })
-    .from(element)
+    .from(clone) // ✅ IMPORTANT FIX
     .save();
 }
-// 👈 important delay
-    document.addEventListener('DOMContentLoaded', function() {
-      const inputs = document.querySelectorAll('input[placeholder]');
-      inputs.forEach(inp => {
-        if (inp.id === 'typedSignature') return;
-        const text = inp.getAttribute('placeholder');
-        if (!text) return;
 
-        const wrap = document.createElement('div');
-        wrap.className = 'field-wrap';
-        const label = document.createElement('label');
-        label.className = 'field-label';
-        label.innerText = text;
+/* ================= INIT ================= */
 
-        inp.parentNode.insertBefore(wrap, inp);
-        wrap.appendChild(label);
-        wrap.appendChild(inp);
-      });
-
-      updateSignatureMode();
-      updateAuditFields();
-      loadDraft();
-
-      window.addEventListener('resize', resizeCanvas);
-      window.addEventListener('load', resizeCanvas);
-      resizeCanvas();
-    });
-    
-    function convertInputsToText(element) {
-  const inputs = element.querySelectorAll('input, textarea, select');
-
-  inputs.forEach(el => {
-    if (el.type === 'radio') return;
-
-    let value = '';
-
-    if (el.type === 'checkbox') {
-      value = el.checked ? '☑' : '☐';
-    } else {
-      value = el.value || '';
-    }
-
-    const div = document.createElement('div');
-    div.style.minHeight = '14px';
-    div.style.padding = '2px 0';
-    div.style.borderBottom = '1px solid #000';
-    div.style.whiteSpace = 'normal';
-    div.style.wordBreak = 'break-word';
-    div.textContent = value;
-
-    el.replaceWith(div);
-  });
-}
-
-
-    
-  </script>
+document.addEventListener('DOMContentLoaded', () => {
+  resizeCanvas();
+  updateSignatureMode();
+});
+</script>
 </body>
 </html>
