@@ -326,100 +326,7 @@
       .preview-note{display:none;}
     }
     
-    .pdf-mode {
-  background: white !important;
-}
-
-/* Remove UI look */
-.pdf-mode .doc {
-  box-shadow: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-}
-
-/* Better page margins */
-.pdf-mode .page {
-  padding: 18mm 16mm !important;
-}
-
-/* 🔥 INPUT → CLEAN TEXT BLOCK */
-.pdf-mode input,
-.pdf-mode textarea,
-.pdf-mode select {
-  border: none !important;
-  background: transparent !important;
-  padding: 2px 0 !important;
-  font-size: 12px !important;
-  line-height: 1.4 !important;
-  min-height: auto !important;
-}
-
-/* 🔥 KEY FIX: prevent cutting */
-.pdf-mode span,
-.pdf-mode input,
-.pdf-mode textarea {
-  display: block !important;
-  width: 100% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-  overflow: visible !important;
-}
-
-/* Add bottom line like real forms */
-.pdf-mode input::after,
-.pdf-mode textarea::after {
-  content: "";
-  display: block;
-  border-bottom: 1px solid #000;
-  margin-top: 2px;
-}
-
-/* Labels cleaner */
-.pdf-mode .field-label {
-  font-size: 10px !important;
-  font-weight: 700;
-  margin-bottom: 2px;
-  color: #000 !important;
-}
-
-/* Tables = professional */
-.pdf-mode table {
-  border-collapse: collapse !important;
-}
-
-.pdf-mode td,
-.pdf-mode th {
-  border: 1px solid #000 !important;
-  padding: 6px !important;
-}
-
-/* Section headers */
-.pdf-mode .section-label {
-  background: #000 !important;
-  color: #fff !important;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-}
-
-/* Remove UI junk */
-.pdf-mode .topbar,
-.pdf-mode .screen-only,
-.pdf-mode .preview-note {
-  display: none !important;
-}
-
-/* Signature block */
-.pdf-mode .signature-wrap {
-  border: 1px solid #000 !important;
-  padding: 8px !important;
-  background: #fff !important;
-}
-
-/* Signature image */
-.pdf-mode img {
-  max-height: 70px;
-}
-
+ 
 /* Improve spacing */
 .pdf-mode .sign-grid {
   gap: 18px !important;
@@ -1062,37 +969,54 @@
 
   updateAuditFields();
 
-  // Clone document
   const original = document.querySelector('.doc');
   const clone = original.cloneNode(true);
 
-  // Convert inputs → text
-  convertInputsToText(clone);
+  // ✅ Convert inputs to clean text
+  clone.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.type === 'radio') return;
 
-  // Handle signature
+    let value = '';
+
+    if (el.type === 'checkbox') {
+      value = el.checked ? '☑' : '☐';
+    } else {
+      value = el.value || '';
+    }
+
+    const div = document.createElement('div');
+    div.style.minHeight = '14px';
+    div.style.padding = '2px 0';
+    div.style.borderBottom = '1px solid #000';
+    div.style.whiteSpace = 'normal';
+    div.style.wordBreak = 'break-word';
+    div.textContent = value;
+
+    el.replaceWith(div);
+  });
+
+  // ✅ Signature fix
   const sigCanvas = clone.querySelector('#signaturePad');
-  if (sigCanvas && savedSignatureData) {
-    const img = document.createElement('img');
-    img.src = savedSignatureData;
-    img.style.height = '70px';
-    sigCanvas.replaceWith(img);
+  if (sigCanvas) {
+    if (savedSignatureData) {
+      const img = document.createElement('img');
+      img.src = savedSignatureData;
+      img.style.height = '70px';
+      img.style.maxWidth = '100%';
+      sigCanvas.replaceWith(img);
+    } else {
+      sigCanvas.replaceWith(document.createElement('div'));
+    }
   }
 
-  // Apply PDF styling
-  document.body.classList.add('pdf-mode');
-
-  // ✅ IMPORTANT: use NORMAL flow (NOT fixed)
-  const container = document.createElement('div');
-  container.style.width = '1000px';
-  container.style.background = '#fff';
-  container.style.margin = '0 auto';
-  container.style.position = 'relative'; // 🔥 FIX
+  // ✅ CLEAN CONTAINER (NO FIXED POSITION)
+  const container = document.getElementById('pdf-content');
+  container.innerHTML = '';
+  container.style.display = 'block';
   container.appendChild(clone);
 
-  document.body.appendChild(container);
-
-  // 🔥 iOS SAFE RENDER
-  window.scrollTo(0, 0);
+  // 🔥 FORCE RENDER (critical for iOS)
+  container.offsetHeight;
 
   setTimeout(() => {
     html2pdf()
@@ -1103,19 +1027,18 @@
         html2canvas: { 
           scale: 2,
           useCORS: true,
-          scrollY: 0,
-          windowWidth: document.body.scrollWidth // 🔥 key fix
+          scrollY: 0
         },
         jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
       })
       .from(container)
       .save()
       .then(() => {
-        document.body.removeChild(container);
-        document.body.classList.remove('pdf-mode');
+        container.style.display = 'none';
+        container.innerHTML = '';
       });
 
-  }, 600); // slightly longer for iOS
+  }, 600);
 }
 // 👈 important delay
     document.addEventListener('DOMContentLoaded', function() {
